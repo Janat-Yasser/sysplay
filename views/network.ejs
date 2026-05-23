@@ -1,0 +1,201 @@
+<div class="module-page network-page">
+
+  <div class="module-hero network-hero">
+    <div class="module-hero-bg"></div>
+    <div class="module-hero-inner">
+      <a href="/" class="breadcrumb">&larr; Systems Playground</a>
+      <div class="module-badge network-badge">Module 03 · Networking</div>
+      <h1 class="module-page-title">Network Simulator</h1>
+      <p class="module-page-sub">
+        Watch packets route across a real network topology. Dijkstra's algorithm
+        finds the shortest path. TTL counts down at each hop. Packets can be lost.
+      </p>
+    </div>
+  </div>
+
+  <div class="section-wrap">
+    <div class="two-col network-layout">
+
+      <!-- Canvas area -->
+      <div class="col-main">
+
+        <!-- Controls bar -->
+        <div class="card network-controls">
+          <div class="nc-row">
+            <div class="nc-group">
+              <label class="nc-label">Topology</label>
+              <div class="topo-btns">
+                <% allTopologies.forEach(t => { %>
+                  <button
+                    class="topo-btn <%= t.id === selectedTopo ? 'active' : '' %>"
+                    onclick="loadTopology('<%= t.id %>')"
+                  ><%= t.name %></button>
+                <% }) %>
+              </div>
+            </div>
+            <div class="nc-group">
+              <label class="nc-label">Packet Type</label>
+              <div class="packet-btns">
+                <% packetTypes.forEach((p, i) => { %>
+                  <button
+                    class="packet-btn <%= i === 0 ? 'active' : '' %>"
+                    data-type="<%= p.id %>"
+                    data-color="<%= p.color %>"
+                    data-ttl="<%= p.ttl %>"
+                    onclick="selectPacketType('<%= p.id %>')"
+                    style="--pcolor: <%= p.color %>"
+                  ><%= p.label %></button>
+                <% }) %>
+              </div>
+            </div>
+          </div>
+          <div class="nc-row nc-row-2">
+            <div class="nc-group">
+              <label class="nc-label">Source</label>
+              <select id="sourceNode" class="nc-select">
+                <% topology.nodes.filter(n => n.type === 'host').forEach(n => { %>
+                  <option value="<%= n.id %>"><%= n.label %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="nc-group">
+              <label class="nc-label">Destination</label>
+              <select id="destNode" class="nc-select">
+                <% topology.nodes.filter(n => n.type === 'host' || n.type === 'server').reverse().forEach(n => { %>
+                  <option value="<%= n.id %>"><%= n.label %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="nc-group">
+              <label class="nc-label">Loss Rate</label>
+              <select id="lossRate" class="nc-select">
+                <option value="0">0% (reliable)</option>
+                <option value="10">10%</option>
+                <option value="25">25%</option>
+                <option value="50">50% (chaotic)</option>
+              </select>
+            </div>
+            <div class="nc-group">
+              <label class="nc-label">Speed</label>
+              <input type="range" id="animSpeed" min="1" max="10" value="5" class="speed-slider">
+            </div>
+            <div class="nc-actions">
+              <button class="btn-primary network-btn" id="sendBtn" onclick="sendPacket()">Send Packet</button>
+              <button class="btn-ghost" onclick="resetNetwork()">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Network canvas -->
+        <div class="card canvas-card">
+          <canvas id="networkCanvas" class="network-canvas"></canvas>
+          <div class="canvas-overlay" id="canvasOverlay" style="display:none">
+            <div class="overlay-msg" id="overlayMsg"></div>
+          </div>
+        </div>
+
+        <!-- Routing table -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Routing Table</h3>
+            <span class="card-hint">Shortest paths from selected source (Dijkstra)</span>
+          </div>
+          <div class="routing-table-wrap">
+            <table class="routing-table" id="routingTable">
+              <thead>
+                <tr><th>Destination</th><th>Next Hop</th><th>Path</th><th>Total Weight</th></tr>
+              </thead>
+              <tbody id="routingTbody">
+                <tr><td colspan="4" class="empty-row">Select source and click Send to compute routes</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-side">
+
+        <!-- Packet log -->
+        <div class="card log-card">
+          <div class="card-header">
+            <h3 class="card-title">Packet Log</h3>
+            <button class="card-clear-btn" onclick="clearLog()">Clear</button>
+          </div>
+          <div class="packet-log" id="packetLog">
+            <div class="log-empty">No packets sent yet</div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="card stats-card">
+          <h3 class="card-title">Session Stats</h3>
+          <div class="db-stats">
+            <div class="db-stat-row"><span class="db-stat-label">Packets sent</span><span class="db-stat-val" id="statSent">0</span></div>
+            <div class="db-stat-row"><span class="db-stat-label">Delivered</span><span class="db-stat-val green-val" id="statDelivered">0</span></div>
+            <div class="db-stat-row"><span class="db-stat-label">Dropped</span><span class="db-stat-val red-val" id="statDropped">0</span></div>
+            <div class="db-stat-row"><span class="db-stat-label">TTL expired</span><span class="db-stat-val orange-val" id="statTTL">0</span></div>
+            <div class="db-stat-row"><span class="db-stat-label">Avg hops</span><span class="db-stat-val" id="statHops">—</span></div>
+          </div>
+        </div>
+
+        <!-- How it works -->
+        <div class="card how-card">
+          <h3 class="card-title">How Routing Works</h3>
+          <div class="how-steps">
+            <div class="how-step-item">
+              <div class="how-step-n">1</div>
+              <div><strong>Dijkstra's Algorithm</strong><p>Finds shortest weighted path from source to all destinations.</p></div>
+            </div>
+            <div class="how-step-item">
+              <div class="how-step-n">2</div>
+              <div><strong>Packet Forwarding</strong><p>Each router reads the destination and forwards to the next hop.</p></div>
+            </div>
+            <div class="how-step-item">
+              <div class="how-step-n">3</div>
+              <div><strong>TTL Countdown</strong><p>Time-to-Live decrements at each hop. Prevents infinite routing loops.</p></div>
+            </div>
+            <div class="how-step-item">
+              <div class="how-step-n">4</div>
+              <div><strong>Packet Loss</strong><p>Simulates real network unreliability. Routers may drop packets randomly.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="card">
+          <h3 class="card-title">Legend</h3>
+          <div class="network-legend">
+            <div class="nl-row"><span class="nl-node host-node-icon"></span>Host / Client</div>
+            <div class="nl-row"><span class="nl-node router-node-icon"></span>Router</div>
+            <div class="nl-row"><span class="nl-node server-node-icon"></span>Server</div>
+            <div class="nl-row"><span class="nl-edge active-edge-icon"></span>Active path</div>
+            <div class="nl-row"><span class="nl-edge dropped-edge-icon"></span>Packet dropped</div>
+          </div>
+        </div>
+
+        <div class="card complexity-card">
+          <h3 class="card-title">Complexity</h3>
+          <div class="complexity-rows">
+            <div class="complexity-row"><span class="c-label">Dijkstra</span><span class="c-val">O(V² )</span></div>
+            <div class="complexity-row"><span class="c-label">With heap</span><span class="c-val">O(E log V)</span></div>
+            <div class="complexity-row"><span class="c-label">Forwarding</span><span class="c-val">O(1)</span></div>
+            <div class="complexity-row"><span class="c-label">Space</span><span class="c-val">O(V + E)</span></div>
+          </div>
+          <p class="complexity-note">V = nodes, E = edges</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const TOPOLOGY = <%- JSON.stringify(topology) %>;
+  const ALL_TOPOLOGIES = <%- JSON.stringify(allTopologies) %>;
+  const PACKET_TYPES = <%- JSON.stringify(packetTypes) %>;
+  const SELECTED_TOPO = '<%= selectedTopo %>';
+</script>
+<script src="/js/network.js"></script>

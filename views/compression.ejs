@@ -1,0 +1,269 @@
+<div class="module-page compression-page">
+
+  <div class="module-hero compression-hero">
+    <div class="module-hero-bg"></div>
+    <div class="module-hero-inner">
+      <a href="/" class="breadcrumb">&larr; Systems Playground</a>
+      <div class="module-badge compression-badge">Module 01 · Compression</div>
+      <h1 class="module-page-title">Huffman Coding</h1>
+      <p class="module-page-sub">
+        The algorithm behind ZIP, GZIP, JPEG, and MP3. Type any text and watch
+        it build a binary tree optimized to compress exactly your input.
+      </p>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="section-wrap">
+    <div class="two-col">
+      <div class="col-main">
+
+        <div class="card input-card">
+          <div class="card-header">
+            <h3 class="card-title">Input Text</h3>
+            <span class="card-hint">Up to 2,000 characters</span>
+          </div>
+          <form id="compressForm" action="/compression" method="POST">
+            <textarea
+              name="text"
+              id="compressInput"
+              class="big-textarea"
+              placeholder="Type or paste any text here... Try a sentence, a paragraph, or something with lots of repeated characters like 'aaabbbcccc'."
+              rows="6"
+              maxlength="2000"
+            ><%= input %></textarea>
+            <div class="input-footer">
+              <span class="char-info"><span id="charCount"><%= input.length %></span> / 2000 chars</span>
+              <div class="input-actions">
+                <button type="button" class="btn-ghost" onclick="loadSample('lorem')">Lorem Ipsum</button>
+                <button type="button" class="btn-ghost" onclick="loadSample('code')">Code Sample</button>
+                <button type="button" class="btn-ghost" onclick="loadSample('repeated')">Repeated</button>
+                <button type="submit" class="btn-primary compression-btn" id="compressBtn">
+                  Compress &rarr;
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <% if (result) { %>
+
+        <!-- Stats row -->
+        <div class="stats-strip compression-strip">
+          <div class="strip-stat">
+            <div class="strip-n"><%= result.originalBits.toLocaleString() %></div>
+            <div class="strip-label">Original bits</div>
+          </div>
+          <div class="strip-arrow">&rarr;</div>
+          <div class="strip-stat">
+            <div class="strip-n accent"><%= result.compressedBits.toLocaleString() %></div>
+            <div class="strip-label">Compressed bits</div>
+          </div>
+          <div class="strip-sep"></div>
+          <div class="strip-stat">
+            <div class="strip-n big"><%= result.ratio %>%</div>
+            <div class="strip-label">Space saved</div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-n"><%= result.uniqueChars %></div>
+            <div class="strip-label">Unique chars</div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-n"><%= result.originalSize %> B</div>
+            <div class="strip-label">Original size</div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-n accent"><%= result.compressedBytes %> B</div>
+            <div class="strip-label">Compressed size</div>
+          </div>
+        </div>
+
+        <!-- Code table -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Huffman Code Table</h3>
+            <span class="card-hint">Shorter codes = more frequent characters</span>
+          </div>
+          <div class="code-table-wrap">
+            <table class="code-table">
+              <thead>
+                <tr>
+                  <th>Char</th>
+                  <th>Frequency</th>
+                  <th>Huffman Code</th>
+                  <th>Bits</th>
+                  <th>vs ASCII (8 bits)</th>
+                  <th>Frequency Bar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% const maxFreq = Math.max(...result.codeTable.map(r => r.freq)); %>
+                <% result.codeTable.forEach(row => { %>
+                  <tr class="code-row" data-char="<%= row.char %>">
+                    <td class="char-cell">
+                      <span class="char-display"><%= row.display %></span>
+                    </td>
+                    <td class="freq-cell"><%= row.freq %></td>
+                    <td class="code-cell">
+                      <% row.code.split('').forEach(bit => { %>
+                        <span class="bit bit-<%= bit %>"><%= bit %></span>
+                      <% }) %>
+                    </td>
+                    <td class="bits-cell"><strong><%= row.bits %></strong></td>
+                    <td class="savings-cell">
+                      <% if (row.savings > 0) { %>
+                        <span class="savings-good">-<%= row.savings %> bits</span>
+                      <% } else if (row.savings < 0) { %>
+                        <span class="savings-bad">+<%= Math.abs(row.savings) %> bits</span>
+                      <% } else { %>
+                        <span class="savings-neutral">same</span>
+                      <% } %>
+                    </td>
+                    <td class="bar-cell">
+                      <div class="freq-bar-bg">
+                        <div class="freq-bar" style="width:<%= Math.round((row.freq/maxFreq)*100) %>%"></div>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Encoded output -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Encoded Binary Output</h3>
+            <span class="card-hint">First 256 bits shown</span>
+          </div>
+          <div class="encoded-output" id="encodedOutput">
+            <% const preview = result.encoded.slice(0, 256); %>
+            <% for (let i = 0; i < preview.length; i += 8) { %>
+              <span class="byte-group">
+                <% preview.slice(i, i+8).split('').forEach(bit => { %>
+                  <span class="bit bit-<%= bit %>"><%= bit %></span>
+                <% }) %>
+              </span>
+            <% } %>
+            <% if (result.encoded.length > 256) { %>
+              <span class="encoded-more">... +<%= result.encoded.length - 256 %> more bits</span>
+            <% } %>
+          </div>
+        </div>
+
+        <% } %>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-side">
+        <div class="card how-card">
+          <h3 class="card-title">How Huffman Works</h3>
+          <div class="how-steps">
+            <div class="how-step-item">
+              <div class="how-step-n">1</div>
+              <div>
+                <strong>Count frequencies</strong>
+                <p>Count how many times each character appears in the input.</p>
+              </div>
+            </div>
+            <div class="how-step-item">
+              <div class="how-step-n">2</div>
+              <div>
+                <strong>Build priority queue</strong>
+                <p>Insert all characters into a min-heap ordered by frequency.</p>
+              </div>
+            </div>
+            <div class="how-step-item">
+              <div class="how-step-n">3</div>
+              <div>
+                <strong>Merge nodes</strong>
+                <p>Repeatedly extract the two lowest-frequency nodes and merge them into a parent.</p>
+              </div>
+            </div>
+            <div class="how-step-item">
+              <div class="how-step-n">4</div>
+              <div>
+                <strong>Assign codes</strong>
+                <p>Traverse the tree: left edge = 0, right edge = 1. Leaf nodes get their code.</p>
+              </div>
+            </div>
+            <div class="how-step-item">
+              <div class="how-step-n">5</div>
+              <div>
+                <strong>Encode</strong>
+                <p>Replace each character with its Huffman code. Common chars get fewer bits.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <% if (result) { %>
+        <div class="card insight-card">
+          <h3 class="card-title">Key Insight</h3>
+          <p class="insight-text">
+            The most frequent character
+            <strong class="insight-char">"<%= result.codeTable[0]?.display %>"</strong>
+            (<%= result.codeTable[0]?.freq %> occurrences) gets a
+            <strong><%= result.codeTable[0]?.bits %>-bit</strong> code instead of 8 bits.
+          </p>
+          <p class="insight-text" style="margin-top:10px">
+            The rarest character gets a longer code — but that's okay because
+            it appears far less often.
+          </p>
+        </div>
+        <% } %>
+
+        <div class="card complexity-card">
+          <h3 class="card-title">Complexity</h3>
+          <div class="complexity-rows">
+            <div class="complexity-row">
+              <span class="c-label">Build tree</span>
+              <span class="c-val">O(n log n)</span>
+            </div>
+            <div class="complexity-row">
+              <span class="c-label">Encode</span>
+              <span class="c-val">O(n)</span>
+            </div>
+            <div class="complexity-row">
+              <span class="c-label">Decode</span>
+              <span class="c-val">O(n)</span>
+            </div>
+            <div class="complexity-row">
+              <span class="c-label">Space</span>
+              <span class="c-val">O(k)</span>
+            </div>
+          </div>
+          <p class="complexity-note">n = text length, k = unique characters</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tree visualization -->
+    <% if (result) { %>
+    <div class="card tree-card">
+      <div class="card-header">
+        <h3 class="card-title">Huffman Tree</h3>
+        <div class="tree-legend">
+          <span class="tl-item"><span class="tl-dot leaf-dot"></span>Leaf (character)</span>
+          <span class="tl-item"><span class="tl-dot internal-dot"></span>Internal (merged)</span>
+          <span class="tl-item"><span class="tl-line zero-line"></span>0 (left)</span>
+          <span class="tl-item"><span class="tl-line one-line"></span>1 (right)</span>
+        </div>
+      </div>
+      <div class="tree-canvas-wrap">
+        <svg id="huffmanTree" class="tree-svg"></svg>
+      </div>
+      <p class="tree-note">Hover a leaf node to highlight its encoding in the code table above.</p>
+    </div>
+
+    <script>
+      const TREE_DATA = <%- JSON.stringify(result.tree) %>;
+      const CODE_TABLE = <%- JSON.stringify(result.codeTable) %>;
+    </script>
+    <% } %>
+  </div>
+
+</div>
+
+<script src="/js/compression.js"></script>

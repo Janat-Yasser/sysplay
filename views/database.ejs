@@ -1,0 +1,205 @@
+<div class="module-page database-page">
+
+  <div class="module-hero database-hero">
+    <div class="module-hero-bg"></div>
+    <div class="module-hero-inner">
+      <a href="/" class="breadcrumb">&larr; Systems Playground</a>
+      <div class="module-badge database-badge">Module 02 · Storage</div>
+      <h1 class="module-page-title">Key-Value Database</h1>
+      <p class="module-page-sub">
+        A real persistent key-value store. Every command writes to disk.
+        Explore the same data structure powering Redis, LevelDB, and RocksDB.
+      </p>
+    </div>
+  </div>
+
+  <div class="section-wrap">
+    <div class="two-col db-layout">
+
+      <!-- Terminal + table -->
+      <div class="col-main">
+
+        <!-- Terminal -->
+        <div class="card terminal-card">
+          <div class="terminal-titlebar">
+            <div class="terminal-dots">
+              <span class="t-dot t-red"></span>
+              <span class="t-dot t-yellow"></span>
+              <span class="t-dot t-green"></span>
+            </div>
+            <span class="terminal-title">kvstore — terminal</span>
+            <span class="terminal-path">data/kvstore.json</span>
+          </div>
+          <div class="terminal-body" id="terminalBody">
+            <div class="terminal-welcome">
+              <div class="tw-line">Systems Playground KV Store v1.0</div>
+              <div class="tw-line dim">Commands: PUT &lt;key&gt; &lt;value&gt; &nbsp;|&nbsp; GET &lt;key&gt; &nbsp;|&nbsp; DELETE &lt;key&gt; &nbsp;|&nbsp; SCAN [prefix] &nbsp;|&nbsp; STATS &nbsp;|&nbsp; FLUSH</div>
+              <div class="tw-line dim">Data persists to disk at <span class="tw-path">data/kvstore.json</span></div>
+              <div class="tw-spacer"></div>
+            </div>
+            <div id="terminalOutput"></div>
+            <div class="terminal-input-wrap">
+              <span class="terminal-prompt">$</span>
+              <input
+                type="text"
+                id="terminalInput"
+                class="terminal-input"
+                placeholder="PUT name Alice"
+                autocomplete="off"
+                spellcheck="false"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick action buttons -->
+        <div class="quick-actions">
+          <span class="qa-label">Quick actions:</span>
+          <button class="qa-btn" onclick="runCommand('PUT user:1 Alice')">PUT user:1</button>
+          <button class="qa-btn" onclick="runCommand('PUT user:2 Bob')">PUT user:2</button>
+          <button class="qa-btn" onclick="runCommand('GET user:1')">GET user:1</button>
+          <button class="qa-btn" onclick="runCommand('SCAN user:')">SCAN user:</button>
+          <button class="qa-btn" onclick="runCommand('STATS')">STATS</button>
+          <button class="qa-btn qa-danger" onclick="confirmFlush()">FLUSH</button>
+        </div>
+
+        <!-- Records table -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Stored Records</h3>
+            <span class="card-badge" id="recordCount"><%= records.length %> records</span>
+          </div>
+          <div class="records-table-wrap">
+            <table class="records-table" id="recordsTable">
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Value</th>
+                  <th>Created</th>
+                  <th>Updated</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="recordsTbody">
+                <% if (records.length === 0) { %>
+                  <tr class="empty-row">
+                    <td colspan="5">No records yet. Use PUT to add some.</td>
+                  </tr>
+                <% } else { %>
+                  <% records.forEach(r => { %>
+                    <tr class="record-row" id="row-<%= r.key.replace(/[^a-zA-Z0-9]/g,'_') %>">
+                      <td class="key-cell"><code><%= r.key %></code></td>
+                      <td class="val-cell"><%= String(r.value).slice(0, 60) %><%= String(r.value).length > 60 ? '...' : '' %></td>
+                      <td class="ts-cell"><%= new Date(r.createdAt).toLocaleTimeString() %></td>
+                      <td class="ts-cell"><%= new Date(r.updatedAt).toLocaleTimeString() %></td>
+                      <td class="action-cell">
+                        <button class="tbl-btn" onclick="runCommand('GET <%= r.key %>')">GET</button>
+                        <button class="tbl-btn tbl-danger" onclick="runCommand('DELETE <%= r.key %>')">DEL</button>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-side">
+
+        <!-- Stats -->
+        <div class="card stats-card" id="statsCard">
+          <h3 class="card-title">Database Stats</h3>
+          <div class="db-stats">
+            <div class="db-stat-row">
+              <span class="db-stat-label">Records</span>
+              <span class="db-stat-val" id="statCount"><%= stats.count %></span>
+            </div>
+            <div class="db-stat-row">
+              <span class="db-stat-label">Total size</span>
+              <span class="db-stat-val" id="statBytes"><%= stats.totalBytes %> bytes</span>
+            </div>
+            <div class="db-stat-row">
+              <span class="db-stat-label">Avg record</span>
+              <span class="db-stat-val" id="statAvg"><%= stats.avgBytes %> bytes</span>
+            </div>
+            <div class="db-stat-row">
+              <span class="db-stat-label">Storage file</span>
+              <span class="db-stat-val path-val">kvstore.json</span>
+            </div>
+          </div>
+          <!-- Mini storage visual -->
+          <div class="storage-visual" id="storageVisual">
+            <div class="sv-label">Storage usage</div>
+            <div class="sv-bar-wrap">
+              <div class="sv-bar" id="svBar" style="width:<%= Math.min(100, stats.totalBytes / 10) %>%"></div>
+            </div>
+            <div class="sv-bytes" id="svBytes"><%= stats.totalBytes %> / ~1000 bytes shown</div>
+          </div>
+        </div>
+
+        <!-- Operation log -->
+        <div class="card log-card">
+          <div class="card-header">
+            <h3 class="card-title">Operation Log</h3>
+            <span class="card-hint">Last 20 ops</span>
+          </div>
+          <div class="op-log" id="opLog">
+            <% if (log.length === 0) { %>
+              <div class="log-empty">No operations yet</div>
+            <% } else { %>
+              <% log.slice(0, 20).forEach(entry => { %>
+                <div class="log-entry log-<%= entry.op.toLowerCase() %>">
+                  <span class="log-op"><%= entry.op %></span>
+                  <span class="log-key"><%= entry.key %></span>
+                  <span class="log-ts"><%= new Date(entry.ts).toLocaleTimeString() %></span>
+                </div>
+              <% }) %>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- How it works -->
+        <div class="card how-card">
+          <h3 class="card-title">How It Works</h3>
+          <div class="how-steps">
+            <div class="how-step-item">
+              <div class="how-step-n">PUT</div>
+              <div><p>Inserts or updates a key. O(1) hash lookup. Writes entire store to disk atomically.</p></div>
+            </div>
+            <div class="how-step-item">
+              <div class="how-step-n">GET</div>
+              <div><p>Reads a value by key. O(1) lookup in the in-memory hash map.</p></div>
+            </div>
+            <div class="how-step-item">
+              <div class="how-step-n">SCAN</div>
+              <div><p>Iterates all keys with a prefix. O(n) — this is why B-trees exist in production.</p></div>
+            </div>
+            <div class="how-step-item">
+              <div class="how-step-n">DEL</div>
+              <div><p>Removes a key. Production databases use tombstone markers for efficiency.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card complexity-card">
+          <h3 class="card-title">Complexity</h3>
+          <div class="complexity-rows">
+            <div class="complexity-row"><span class="c-label">PUT</span><span class="c-val">O(1) avg</span></div>
+            <div class="complexity-row"><span class="c-label">GET</span><span class="c-val">O(1) avg</span></div>
+            <div class="complexity-row"><span class="c-label">DELETE</span><span class="c-val">O(1) avg</span></div>
+            <div class="complexity-row"><span class="c-label">SCAN</span><span class="c-val">O(n)</span></div>
+            <div class="complexity-row"><span class="c-label">Space</span><span class="c-val">O(n)</span></div>
+          </div>
+          <p class="complexity-note">Why real DBs use B-trees: sorted SCAN becomes O(log n)</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="/js/database.js"></script>

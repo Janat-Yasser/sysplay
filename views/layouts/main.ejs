@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-mark">SP</div>
+      <span>Systems<strong>Playground</strong></span>
+    </a>
+    <div class="nav-links">
+      <a href="/compression" class="nav-link <%= typeof title !== 'undefined' && title.includes('Huffman') ? 'active' : '' %>">
+        <span class="nav-link-dot compression-dot"></span>Compression
+      </a>
+      <a href="/database" class="nav-link <%= typeof title !== 'undefined' && title.includes('Key-Value') ? 'active' : '' %>">
+        <span class="nav-link-dot database-dot"></span>Database
+      </a>
+      <a href="/network" class="nav-link <%= typeof title !== 'undefined' && title.includes('Network') ? 'active' : '' %>">
+        <span class="nav-link-dot network-dot"></span>Networking
+      </a>
+    </div>
+    <div class="nav-badge">CS Internals</div>
+  </nav>
+
+  <main><%- body %></main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>Systems Playground</span>
+      <span class="footer-sep">·</span>
+      <span>Huffman Coding · Key-Value Store · Network Simulation</span>
+      <span class="footer-sep">·</span>
+      <span>Built with Node.js + Express</span>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>
