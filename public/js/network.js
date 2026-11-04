@@ -471,7 +471,7 @@ function logPacket(type, pktType, path, hops, dist, why) {
     ttl:       { badge: 'TTL',       cls: 'plog-ttl       badge-ttl'       }
   };
   const { badge, cls } = labels[type] || labels.delivered;
-  const [badgeCls, entryCls] = cls.trim().split(/\s+/);
+  const [entryCls, badgeCls] = cls.trim().split(/\s+/);
 
   const entry = document.createElement('div');
   entry.className = `plog-entry ${entryCls}`;

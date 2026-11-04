@@ -105,6 +105,11 @@ function renderForest(roots, opts = {}) {
   };
   roots.forEach((r) => { edges(r); });
   roots.forEach((r) => { nodes(r); });
+  // keep the node that was just merged in view when the forest is wider than the panel
+  const all = []; const walk = (n) => { if (n) { all.push(n); walk(n.left); walk(n.right); } }; roots.forEach(walk);
+  const h = all.find((n) => hot.has(n.id));
+  const wrap = svg.parentElement;
+  if (h && wrap && wrap.scrollWidth > wrap.clientWidth) wrap.scrollLeft = Math.max(0, xy(h).x - wrap.clientWidth / 2);
 }
 
 function mk(tag, attrs, text) {

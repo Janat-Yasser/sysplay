@@ -1,69 +1,87 @@
 # Systems Playground
 
-**See how computers actually work.**
+**Open the box.** Three real systems you can poke at: a Huffman compressor that builds its tree in front of you, a key-value store that writes every command to disk, and a packet network where you can cut a cable and watch the routes heal.
 
-Three interactive modules that open up the systems behind everyday computing: compression, storage engines and networking. These aren't canned animations. Each module runs a real implementation you can poke at.
+![Packets crossing a mesh network; a cable is cut, the next packet re-routes around it, then a burst of ten at 25% packet loss](docs/network.gif)
 
 ![Node](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js&logoColor=white)
-![EJS](https://img.shields.io/badge/views-EJS-B4CA65)
+![Tests](https://img.shields.io/badge/tests-5%20passing-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-![Network simulator routing an HTTP request across the topology](docs/network.png)
+## Why it's interesting
 
----
+- **Cut a cable mid-run.** Click any link in the network to take it down. Dijkstra recomputes the routing table, and a packet already in flight re-routes at the next router, or is dropped if no route is left. Turn up packet loss and send ten in a row to see what a lossy link does to a stream. A TTL-2 probe shows a packet running out of hops, the way traceroute works.
+- **Watch the Huffman tree grow.** Every merge plays out with the priority queue shown above the forest: the two smallest counts get pulled, joined and pushed back. The playback runs the same algorithm as the server, so it ends on exactly the tree whose codes are in the table.
+- **A database you can see on disk.** PUT, GET, DELETE, SCAN and STATS from a terminal, with an operation log next to it. Every write lands in `data/kvstore.json`.
+- **Real implementations, not canned animations.** What you see is the actual algorithm running on your input.
 
-## Modules
+| The board | Huffman, merge by merge | Key-value store |
+|---|---|---|
+| ![Home page: three chips on a circuit board, one per module](docs/home.png) | ![The Huffman forest after 9 merges, with the priority queue above it](docs/compression.png) | ![The terminal after PUT, GET and SCAN, with stored records and the operation log](docs/database.png) |
 
-### 01 · Huffman Compression
-Type any text and watch the Huffman tree build in real time. See which characters get short codes and which get long ones, and why. You can compare original and compressed size character by character. It's the same greedy idea behind ZIP.
+## How it fits together
 
-*Concepts: greedy algorithms, priority queues, binary trees, entropy, variable-length encoding.*
-
-![Huffman tree built from sample text](docs/compression.png)
-
-### 02 · Key-Value Database
-A real key-value store that persists to disk. Drive it from a terminal-style interface with `PUT`, `GET`, `DELETE`, `SCAN`, `STATS` and `FLUSH`, and watch the operation log and the JSON file on disk change as you go.
-
-*Concepts: storage engines, persistence, hash-map indexing, operation logging, range scans.*
-
-![Key-value store terminal and operation log](docs/database.png)
-
-### 03 · Network Simulator
-Send packets (HTTP, DNS, ICMP ping, TCP, data payloads) across an animated topology: a simple network, a mesh, or a "mini internet". Routing happens hop by hop using Dijkstra's shortest path. You can simulate packet loss, TTL expiry and congestion.
-
-*Concepts: packet switching, shortest-path routing, TTL and hop counts, topologies.*
+```mermaid
+flowchart LR
+  subgraph Server [Express]
+    H[models/huffman.js<br/>tree, codes, encoding]
+    K[models/kvstore.js<br/>hash map + JSON file + op log]
+    N[models/network.js<br/>topologies, packet types]
+  end
+  H -->|tree + code table| C[Compression page<br/>merge-by-merge playback]
+  K <-->|/database/api| D[Terminal + records]
+  N -->|topology| R[Network canvas<br/>Dijkstra, TTL, loss, cut cables]
+```
 
 ## Quick start
 
 ```bash
-git clone https://github.com/Janat-Yasser/sysplay.git
-cd sysplay
+git clone https://github.com/Janat-Yasser/sysplay.git && cd sysplay
 npm install
-npm run dev
+npm start
 ```
 
-Open **http://localhost:3000**. The KV store writes to `data/kvstore.json`, which is created automatically and gitignored.
+Open http://localhost:3000. The store file `data/kvstore.json` is created on first write and gitignored.
 
-## Project structure
+<details>
+<summary>The three modules</summary>
+
+| Ref | Module | Try this | Concepts |
+|---|---|---|---|
+| U1 | Huffman compression | Load the Dickens sample, then step through the merges. Watch the space character end up with a 2-bit code. | Greedy algorithms, priority queues, prefix-free codes |
+| U2 | Key-value store | `PUT user:1 Alice`, `PUT user:2 Bob`, `SCAN user:`, then `STATS` | Hash indexing, persistence, why range scans want sorted storage |
+| U3 | Packet network | Mesh topology: send a packet, cut R1 to R4, send again | Shortest-path routing, TTL, packet loss, redundancy |
+
+</details>
+
+<details>
+<summary>Design</summary>
+
+The site is a circuit board: green solder mask, off-white silkscreen labels, copper traces and status LEDs. Green means delivered or OK, amber means waiting or TTL, red means dropped or cut. Each module is a chip with a reference designator (U1, U2, U3), and the home page has a parts list. Type is Barlow Semi Condensed and JetBrains Mono, self-hosted in `public/fonts` (SIL Open Font License).
+
+</details>
+
+<details>
+<summary>Project layout</summary>
 
 ```
-sysplay/
-├── server.js
-├── models/
-│   ├── huffman.js       # Huffman tree + code table + compression stats
-│   ├── kvstore.js       # File-backed key-value store with an operation log
-│   ├── network.js       # Topologies + packet types
-│   └── controllers.js
-├── routes/              # /compression, /database, /network
-├── views/               # One EJS page per module
-└── public/js/           # Client-side visualizers
+server.js
+models/huffman.js       Huffman tree, code table, compression stats
+models/kvstore.js       file-backed key-value store with an operation log
+models/network.js       topologies and packet types
+models/controllers.js
+routes/                 /compression, /database, /network
+views/                  EJS pages; partials/board.ejs is the home-page board
+public/js/              compression.js (tree playback), database.js (terminal), network.js (canvas)
+test/huffman.test.js    round-trip and prefix-free tests
 ```
+
+</details>
 
 ## Roadmap
 
-- [ ] An LRU cache module (eviction visualized)
-- [ ] A B-tree index for the KV store
-- [ ] A TCP handshake and congestion-window module
+- An LRU cache module, with eviction shown
+- A B-tree index for the key-value store, so SCAN stops being O(n)
+- TCP: the three-way handshake and a congestion window
 
-## License
-
-MIT
+MIT licensed.
