@@ -76,11 +76,13 @@ const TOPOLOGIES = {
 };
 
 const PACKET_TYPES = [
-  { id: 'http',  label: 'HTTP Request',  color: '#3b82f6', ttl: 64,  size: '1.2 KB' },
-  { id: 'dns',   label: 'DNS Query',     color: '#8b5cf6', ttl: 32,  size: '64 B'   },
-  { id: 'ping',  label: 'ICMP Ping',     color: '#10b981', ttl: 128, size: '32 B'   },
-  { id: 'tcp',   label: 'TCP Segment',   color: '#f59e0b', ttl: 64,  size: '512 B'  },
-  { id: 'data',  label: 'Data Payload',  color: '#ec4899', ttl: 64,  size: '8 KB'   }
+  { id: 'http',  label: 'HTTP Request',  color: '#6CC8FF', ttl: 64,  size: '1.2 KB' },
+  { id: 'dns',   label: 'DNS Query',     color: '#C79BFF', ttl: 32,  size: '64 B'   },
+  { id: 'ping',  label: 'ICMP Ping',     color: '#74FF9A', ttl: 128, size: '32 B'   },
+  { id: 'tcp',   label: 'TCP Segment',   color: '#FFB833', ttl: 64,  size: '512 B'  },
+  { id: 'data',  label: 'Data Payload',  color: '#FF7AB8', ttl: 64,  size: '8 KB'   },
+  // traceroute-style probe: runs out of hops on longer routes, so you can watch TTL expire
+  { id: 'probe', label: 'TTL 2 probe',   color: '#F0BC6C', ttl: 2,   size: '32 B'   }
 ];
 
 function getTopology(id) {

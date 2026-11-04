@@ -3,8 +3,8 @@
   <div class="module-hero compression-hero">
     <div class="module-hero-bg"></div>
     <div class="module-hero-inner">
-      <a href="/" class="breadcrumb">&larr; Systems Playground</a>
-      <div class="module-badge compression-badge">Module 01 · Compression</div>
+      <a href="/" class="breadcrumb">Back to the board</a>
+      <div class="module-badge compression-badge">U1</div>
       <h1 class="module-page-title">Huffman Coding</h1>
       <p class="module-page-sub">
         The algorithm behind ZIP, GZIP, JPEG, and MP3. Type any text and watch
@@ -20,7 +20,7 @@
 
         <div class="card input-card">
           <div class="card-header">
-            <h3 class="card-title">Input Text</h3>
+            <h3 class="card-title">Input text</h3>
             <span class="card-hint">Up to 2,000 characters</span>
           </div>
           <form id="compressForm" action="/compression" method="POST">
@@ -35,11 +35,11 @@
             <div class="input-footer">
               <span class="char-info"><span id="charCount"><%= input.length %></span> / 2000 chars</span>
               <div class="input-actions">
-                <button type="button" class="btn-ghost" onclick="loadSample('lorem')">Lorem Ipsum</button>
+                <button type="button" class="btn-ghost" onclick="loadSample('english')">Dickens</button>
                 <button type="button" class="btn-ghost" onclick="loadSample('code')">Code Sample</button>
                 <button type="button" class="btn-ghost" onclick="loadSample('repeated')">Repeated</button>
                 <button type="submit" class="btn-primary compression-btn" id="compressBtn">
-                  Compress &rarr;
+                  Compress
                 </button>
               </div>
             </div>
@@ -78,10 +78,34 @@
           </div>
         </div>
 
+    <div class="card tree-card">
+          <div class="card-header">
+            <h3 class="card-title">Huffman tree</h3>
+            <div class="tree-legend">
+              <span class="tl-item"><span class="tl-dot leaf-dot"></span>Character (count below)</span>
+              <span class="tl-item"><span class="tl-dot internal-dot"></span>Merged node (total count)</span>
+              <span class="tl-item"><span class="tl-line zero-line"></span>0</span>
+              <span class="tl-item"><span class="tl-line one-line"></span>1</span>
+            </div>
+          </div>
+          <div class="build-bar">
+            <button class="btn-primary" id="buildPlay" onclick="playBuild()">Play</button>
+            <button class="btn-ghost" onclick="stepBuild()">Next merge</button>
+            <button class="btn-ghost" onclick="finishBuild()">Finished tree</button>
+            <span class="step-text" id="stepText"></span>
+          </div>
+          <div class="pq" id="pq" aria-label="Priority queue, smallest first"></div>
+          <div class="tree-canvas-wrap">
+            <svg id="huffmanTree" class="tree-svg"></svg>
+          </div>
+          <p class="tree-note">The row above the tree is the priority queue, smallest count first. Hover a character to find its code in the table.</p>
+        </div>
+
+
         <!-- Code table -->
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Huffman Code Table</h3>
+            <h3 class="card-title">Code table</h3>
             <span class="card-hint">Shorter codes = more frequent characters</span>
           </div>
           <div class="code-table-wrap">
@@ -134,7 +158,7 @@
         <!-- Encoded output -->
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Encoded Binary Output</h3>
+            <h3 class="card-title">Encoded output</h3>
             <span class="card-hint">First 256 bits shown</span>
           </div>
           <div class="encoded-output" id="encodedOutput">
@@ -158,7 +182,7 @@
       <!-- Sidebar -->
       <div class="col-side">
         <div class="card how-card">
-          <h3 class="card-title">How Huffman Works</h3>
+          <h3 class="card-title">How Huffman coding works</h3>
           <div class="how-steps">
             <div class="how-step-item">
               <div class="how-step-n">1</div>
@@ -200,7 +224,7 @@
 
         <% if (result) { %>
         <div class="card insight-card">
-          <h3 class="card-title">Key Insight</h3>
+          <h3 class="card-title">What happened</h3>
           <p class="insight-text">
             The most frequent character
             <strong class="insight-char">"<%= result.codeTable[0]?.display %>"</strong>
@@ -241,25 +265,8 @@
 
     <!-- Tree visualization -->
     <% if (result) { %>
-    <div class="card tree-card">
-      <div class="card-header">
-        <h3 class="card-title">Huffman Tree</h3>
-        <div class="tree-legend">
-          <span class="tl-item"><span class="tl-dot leaf-dot"></span>Leaf (character)</span>
-          <span class="tl-item"><span class="tl-dot internal-dot"></span>Internal (merged)</span>
-          <span class="tl-item"><span class="tl-line zero-line"></span>0 (left)</span>
-          <span class="tl-item"><span class="tl-line one-line"></span>1 (right)</span>
-        </div>
-      </div>
-      <div class="tree-canvas-wrap">
-        <svg id="huffmanTree" class="tree-svg"></svg>
-      </div>
-      <p class="tree-note">Hover a leaf node to highlight its encoding in the code table above.</p>
-    </div>
-
     <script>
-      const TREE_DATA = <%- JSON.stringify(result.tree) %>;
-      const CODE_TABLE = <%- JSON.stringify(result.codeTable) %>;
+      const INPUT_TEXT = <%- JSON.stringify(input).replace(/</g, '\\u003c') %>;
     </script>
     <% } %>
   </div>

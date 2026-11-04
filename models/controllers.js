@@ -5,7 +5,7 @@ const { getTopology, getAllTopologies, getPacketTypes } = require('./network');
 
 exports.index = {
   getHome: (req, res) => {
-    res.render('index', { title: 'Systems Playground — CS Internals Visualized' });
+    res.render('index', { title: 'Systems Playground: open the box' });
   }
 };
 

@@ -1,156 +1,35 @@
-<div class="home-hero">
-  <div class="hero-grid-bg"></div>
-  <div class="hero-inner">
-    <div class="hero-pill">Computer Science · Systems</div>
-    <h1 class="hero-title">
-      See How Computers<br>
-      <span class="hero-accent">Actually Work</span>
-    </h1>
-    <p class="hero-sub">
-      Three interactive modules that go deep inside the algorithms and data structures
-      powering every computer on the planet. Not just animations — real implementations
-      you can play with.
-    </p>
-  </div>
-</div>
+<section class="home-top">
+  <h1 class="home-title">Open the box.</h1>
+  <p class="home-sub">Three real systems running where you can poke them: a Huffman compressor, a key-value store that writes to disk, and a packet network that routes with Dijkstra. Change the input and watch them work.</p>
+</section>
 
-<!-- Module cards -->
-<div class="modules-section">
-  <div class="modules-grid">
+<section class="board-wrap" aria-label="Modules">
+  <%- include('partials/board') %>
+</section>
 
-    <!-- Compression -->
-    <a href="/compression" class="module-card module-compression">
-      <div class="module-card-glow compression-glow"></div>
-      <div class="module-number">01</div>
-      <div class="module-icon compression-icon">
-        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="4" y="8" width="40" height="6" rx="3" fill="currentColor" opacity="0.9"/>
-          <rect x="8" y="20" width="32" height="5" rx="2.5" fill="currentColor" opacity="0.7"/>
-          <rect x="14" y="31" width="20" height="4" rx="2" fill="currentColor" opacity="0.5"/>
-          <rect x="20" y="40" width="8" height="3" rx="1.5" fill="currentColor" opacity="0.3"/>
-        </svg>
-      </div>
-      <h2 class="module-title">Huffman Compression</h2>
-      <p class="module-desc">
-        Type any text and watch a Huffman tree build in real time. See exactly how
-        ZIP files work — which characters get short codes, which get long ones,
-        and why. Compare bit savings character by character.
-      </p>
-      <div class="module-tags">
-        <span class="tag">Greedy Algorithm</span>
-        <span class="tag">Binary Trees</span>
-        <span class="tag">Entropy</span>
-      </div>
-      <div class="module-concepts">
-        <div class="concept">Frequency analysis</div>
-        <div class="concept">Priority queue</div>
-        <div class="concept">Variable-length encoding</div>
-        <div class="concept">Compression ratio</div>
-      </div>
-      <div class="module-cta">Open Module &rarr;</div>
-    </a>
-
-    <!-- Database -->
-    <a href="/database" class="module-card module-database">
-      <div class="module-card-glow database-glow"></div>
-      <div class="module-number">02</div>
-      <div class="module-icon database-icon">
-        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="24" cy="12" rx="18" ry="6" fill="currentColor" opacity="0.9"/>
-          <path d="M6 12v8c0 3.314 8.059 6 18 6s18-2.686 18-6v-8" stroke="currentColor" stroke-width="2.5" fill="none" opacity="0.7"/>
-          <path d="M6 20v8c0 3.314 8.059 6 18 6s18-2.686 18-6v-8" stroke="currentColor" stroke-width="2.5" fill="none" opacity="0.5"/>
-          <path d="M6 28v8c0 3.314 8.059 6 18 6s18-2.686 18-6v-8" stroke="currentColor" stroke-width="2.5" fill="none" opacity="0.3"/>
-        </svg>
-      </div>
-      <h2 class="module-title">Key-Value Database</h2>
-      <p class="module-desc">
-        A real key-value store that persists to disk. Type commands in a terminal
-        interface — PUT, GET, DELETE, SCAN. Watch the operation log update,
-        see the JSON file change on disk in real time.
-      </p>
-      <div class="module-tags">
-        <span class="tag">Storage Engines</span>
-        <span class="tag">Persistence</span>
-        <span class="tag">CRUD</span>
-      </div>
-      <div class="module-concepts">
-        <div class="concept">Hash-map indexing</div>
-        <div class="concept">Write-ahead logging</div>
-        <div class="concept">Range scans</div>
-        <div class="concept">Atomic operations</div>
-      </div>
-      <div class="module-cta">Open Module &rarr;</div>
-    </a>
-
-    <!-- Network -->
-    <a href="/network" class="module-card module-network">
-      <div class="module-card-glow network-glow"></div>
-      <div class="module-number">03</div>
-      <div class="module-icon network-icon">
-        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="8"  cy="24" r="5" fill="currentColor" opacity="0.9"/>
-          <circle cx="24" cy="8"  r="5" fill="currentColor" opacity="0.8"/>
-          <circle cx="40" cy="24" r="5" fill="currentColor" opacity="0.9"/>
-          <circle cx="24" cy="40" r="5" fill="currentColor" opacity="0.7"/>
-          <circle cx="24" cy="24" r="5" fill="currentColor" opacity="0.6"/>
-          <line x1="13" y1="24" x2="19" y2="24" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-          <line x1="29" y1="24" x2="35" y2="24" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-          <line x1="24" y1="13" x2="24" y2="19" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-          <line x1="24" y1="29" x2="24" y2="35" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-        </svg>
-      </div>
-      <h2 class="module-title">Network Simulator</h2>
-      <p class="module-desc">
-        Send packets across an animated network topology. Choose from three network
-        layouts, pick a packet type (HTTP, DNS, TCP), and watch routing happen hop
-        by hop. Simulate packet loss, TTL expiry, and congestion.
-      </p>
-      <div class="module-tags">
-        <span class="tag">Dijkstra Routing</span>
-        <span class="tag">TCP/IP</span>
-        <span class="tag">Packet Switching</span>
-      </div>
-      <div class="module-concepts">
-        <div class="concept">Shortest path routing</div>
-        <div class="concept">TTL & hop counts</div>
-        <div class="concept">Packet loss simulation</div>
-        <div class="concept">Network topologies</div>
-      </div>
-      <div class="module-cta">Open Module &rarr;</div>
-    </a>
-
-  </div>
-</div>
-
-<!-- Why this exists -->
-<div class="why-section">
-  <div class="why-inner">
-    <div class="why-left">
-      <h2 class="why-title">Built for CS Students</h2>
-      <p class="why-text">
-        Textbooks describe these algorithms. Lectures explain them. But until you
-        <em>see</em> a Huffman tree build itself from your own text, or watch a
-        packet bounce across routers losing TTL at each hop — it doesn't click.
-      </p>
-      <p class="why-text">
-        Every module here is a real implementation, not a demo. The KV store
-        actually writes to disk. The Huffman encoder actually compresses your text.
-        The network simulator uses Dijkstra's algorithm to find real shortest paths.
-      </p>
-    </div>
-    <div class="why-right">
-      <div class="why-stat">
-        <div class="why-stat-n">3</div>
-        <div class="why-stat-label">Core CS Concepts</div>
-      </div>
-      <div class="why-stat">
-        <div class="why-stat-n">Real</div>
-        <div class="why-stat-label">Implementations</div>
-      </div>
-      <div class="why-stat">
-        <div class="why-stat-n">Live</div>
-        <div class="why-stat-label">Visualizations</div>
-      </div>
-    </div>
-  </div>
-</div>
+<section class="bom">
+  <h2>Parts list</h2>
+  <table class="bom-table">
+    <thead><tr><th>Ref</th><th>Part</th><th>What you can do with it</th><th>What it teaches</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="ref">U1</td>
+        <td><a href="/compression">Huffman compression</a></td>
+        <td>Type any text and watch the tree get built merge by merge, then see every character's new code and how many bits you saved.</td>
+        <td>Greedy algorithms, priority queues, variable-length codes</td>
+      </tr>
+      <tr>
+        <td class="ref">U2</td>
+        <td><a href="/database">Key-value store</a></td>
+        <td>Drive a real store from a terminal with PUT, GET, DELETE and SCAN. Every write lands in a JSON file on disk.</td>
+        <td>Hash indexes, persistence, why range scans need sorted storage</td>
+      </tr>
+      <tr>
+        <td class="ref">U3</td>
+        <td><a href="/network">Packet network</a></td>
+        <td>Send packets across three topologies, cut a cable mid-run and watch the routes heal, turn up packet loss and count what gets through.</td>
+        <td>Shortest-path routing, TTL, packet loss, redundancy</td>
+      </tr>
+    </tbody>
+  </table>
+</section>

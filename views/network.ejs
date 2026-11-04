@@ -3,8 +3,8 @@
   <div class="module-hero network-hero">
     <div class="module-hero-bg"></div>
     <div class="module-hero-inner">
-      <a href="/" class="breadcrumb">&larr; Systems Playground</a>
-      <div class="module-badge network-badge">Module 03 · Networking</div>
+      <a href="/" class="breadcrumb">Back to the board</a>
+      <div class="module-badge network-badge">U3</div>
       <h1 class="module-page-title">Network Simulator</h1>
       <p class="module-page-sub">
         Watch packets route across a real network topology. Dijkstra's algorithm
@@ -34,7 +34,7 @@
               </div>
             </div>
             <div class="nc-group">
-              <label class="nc-label">Packet Type</label>
+              <label class="nc-label">Packet type</label>
               <div class="packet-btns">
                 <% packetTypes.forEach((p, i) => { %>
                   <button
@@ -67,7 +67,7 @@
               </select>
             </div>
             <div class="nc-group">
-              <label class="nc-label">Loss Rate</label>
+              <label class="nc-label">Packet loss</label>
               <select id="lossRate" class="nc-select">
                 <option value="0">0% (reliable)</option>
                 <option value="10">10%</option>
@@ -80,7 +80,8 @@
               <input type="range" id="animSpeed" min="1" max="10" value="5" class="speed-slider">
             </div>
             <div class="nc-actions">
-              <button class="btn-primary network-btn" id="sendBtn" onclick="sendPacket()">Send Packet</button>
+              <button class="btn-primary network-btn" id="sendBtn" onclick="sendPacket()">Send packet</button>
+              <button class="btn-ghost" onclick="sendBurst(10)">Send 10</button>
               <button class="btn-ghost" onclick="resetNetwork()">Reset</button>
             </div>
           </div>
@@ -88,16 +89,18 @@
 
         <!-- Network canvas -->
         <div class="card canvas-card">
-          <canvas id="networkCanvas" class="network-canvas"></canvas>
+          <canvas id="networkCanvas" class="network-canvas" aria-label="Network diagram. Click a cable to cut or repair it."></canvas>
           <div class="canvas-overlay" id="canvasOverlay" style="display:none">
             <div class="overlay-msg" id="overlayMsg"></div>
           </div>
         </div>
 
+        <p class="canvas-hint">Click any cable to cut it, then send another packet: the routing table recomputes and packets already on the way re-route at the next router. Click it again to repair it.</p>
+
         <!-- Routing table -->
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Routing Table</h3>
+            <h3 class="card-title">Routing table</h3>
             <span class="card-hint">Shortest paths from selected source (Dijkstra)</span>
           </div>
           <div class="routing-table-wrap">
@@ -120,7 +123,7 @@
         <!-- Packet log -->
         <div class="card log-card">
           <div class="card-header">
-            <h3 class="card-title">Packet Log</h3>
+            <h3 class="card-title">Packet log</h3>
             <button class="card-clear-btn" onclick="clearLog()">Clear</button>
           </div>
           <div class="packet-log" id="packetLog">
@@ -130,7 +133,7 @@
 
         <!-- Stats -->
         <div class="card stats-card">
-          <h3 class="card-title">Session Stats</h3>
+          <h3 class="card-title">Session</h3>
           <div class="db-stats">
             <div class="db-stat-row"><span class="db-stat-label">Packets sent</span><span class="db-stat-val" id="statSent">0</span></div>
             <div class="db-stat-row"><span class="db-stat-label">Delivered</span><span class="db-stat-val green-val" id="statDelivered">0</span></div>
@@ -142,7 +145,7 @@
 
         <!-- How it works -->
         <div class="card how-card">
-          <h3 class="card-title">How Routing Works</h3>
+          <h3 class="card-title">How routing works</h3>
           <div class="how-steps">
             <div class="how-step-item">
               <div class="how-step-n">1</div>
@@ -171,14 +174,14 @@
             <div class="nl-row"><span class="nl-node router-node-icon"></span>Router</div>
             <div class="nl-row"><span class="nl-node server-node-icon"></span>Server</div>
             <div class="nl-row"><span class="nl-edge active-edge-icon"></span>Active path</div>
-            <div class="nl-row"><span class="nl-edge dropped-edge-icon"></span>Packet dropped</div>
+            <div class="nl-row"><span class="nl-edge dropped-edge-icon"></span>Cut cable</div>
           </div>
         </div>
 
         <div class="card complexity-card">
           <h3 class="card-title">Complexity</h3>
           <div class="complexity-rows">
-            <div class="complexity-row"><span class="c-label">Dijkstra</span><span class="c-val">O(V² )</span></div>
+            <div class="complexity-row"><span class="c-label">Dijkstra (as written)</span><span class="c-val">O(V²)</span></div>
             <div class="complexity-row"><span class="c-label">With heap</span><span class="c-val">O(E log V)</span></div>
             <div class="complexity-row"><span class="c-label">Forwarding</span><span class="c-val">O(1)</span></div>
             <div class="complexity-row"><span class="c-label">Space</span><span class="c-val">O(V + E)</span></div>

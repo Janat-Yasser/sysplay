@@ -7,6 +7,7 @@
 // ── Sample texts ───────────────────────────────
 const SAMPLES = {
   lorem: `The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump!`,
+  english: `It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness.`,
   code: `function fibonacci(n) {\n  if (n <= 1) return n;\n  return fibonacci(n - 1) + fibonacci(n - 2);\n}\nconsole.log(fibonacci(10));`,
   repeated: `aaaaaaaaabbbbbbbcccccddddeeefghijklmnopqrstuvwxyz`
 };
@@ -28,176 +29,134 @@ function updateCount() {
 
 document.getElementById('compressInput')?.addEventListener('input', updateCount);
 
-// ── Tree renderer ──────────────────────────────
-if (typeof TREE_DATA !== 'undefined' && TREE_DATA) {
-  renderHuffmanTree(TREE_DATA, CODE_TABLE);
+// ── Huffman build, ported from models/huffman.js so the step-by-step
+//    playback ends on exactly the tree the server computed ──────────────
+let _nid = 0;
+function hnode(char, freq, left = null, right = null) { return { id: 'n' + (_nid++), char, freq, left, right, isLeaf: !left && !right }; }
+
+function buildSnapshots(text) {
+  const freq = {};
+  for (const ch of text) freq[ch] = (freq[ch] || 0) + 1;
+  let nodes = Object.entries({ ...freq }).map(([c, f]) => hnode(c, f)).sort((a, b) => a.freq - b.freq);
+  const snaps = [{ roots: [...nodes], merged: null }];
+  while (nodes.length > 1) {
+    nodes.sort((a, b) => a.freq - b.freq);
+    const left = nodes.shift(), right = nodes.shift();
+    const parent = hnode(null, left.freq + right.freq, left, right);
+    nodes.push(parent);
+    snaps.push({ roots: [...nodes].sort((a, b) => a.freq - b.freq), merged: parent, left, right });
+  }
+  return snaps;
 }
 
-function renderHuffmanTree(root, codeTable) {
+const show = (c) => (c === ' ' ? 'SPC' : c === '\n' ? 'NL' : c === '\t' ? 'TAB' : c);
+
+// ── Tree renderer: draws a forest (one tree per item still in the queue) ──
+const COL = { zero: '#7F978A', one: '#74FF9A', leaf: '#C98F44', leafHi: '#F0BC6C', chip: '#15181A', chipEdge: '#3A4245', silk: '#EEEBDD', silk3: '#7F978A', amber: '#FFB833' };
+
+function renderForest(roots, opts = {}) {
   const svg = document.getElementById('huffmanTree');
-  if (!svg || !root) return;
-
-  const NODE_R   = 22;
-  const H_GAP    = 48;
-  const V_GAP    = 70;
-  const PAD      = 40;
-
-  // ── Layout: assign (x, y) via in-order traversal ──
+  if (!svg || !roots.length) return;
+  const R = 16, H_GAP = 40, V_GAP = 64, PAD = 30;
   let counter = 0;
-  function assignX(node) {
-    if (!node) return;
-    assignX(node.left);
-    node._x = counter++;
-    assignX(node.right);
-  }
-  assignX(root);
-
-  const total  = counter;
-  const depth  = getDepth(root);
-  const W      = Math.max(total * H_GAP + PAD * 2, 500);
-  const H      = depth * V_GAP + PAD * 2 + NODE_R * 2;
-
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.setAttribute('width',  W);
-  svg.setAttribute('height', H);
+  const place = (n, d) => { if (!n) return; place(n.left, d + 1); n._x = counter++; n._d = d; place(n.right, d + 1); };
+  const depthOf = (n) => (n ? 1 + Math.max(depthOf(n.left), depthOf(n.right)) : 0);
+  roots.forEach((r) => { place(r, 0); counter += 0.6; });
+  const maxDepth = Math.max(...roots.map(depthOf));
+  const W = Math.max(counter * H_GAP + PAD * 2, 520);
+  const Hh = (maxDepth - 1) * V_GAP + PAD * 2 + R * 2 + 18;
+  svg.setAttribute('viewBox', `0 0 ${W} ${Hh}`);
+  svg.setAttribute('width', W); svg.setAttribute('height', Hh);
   svg.innerHTML = '';
+  const xy = (n) => ({ x: PAD + n._x * H_GAP + R, y: PAD + R + n._d * V_GAP });
+  const hot = new Set(opts.hot || []);
 
-  const xStep  = (W - PAD * 2) / Math.max(total - 1, 1);
-
-  function pos(node, d) {
-    return {
-      x: PAD + node._x * xStep,
-      y: PAD + NODE_R + d * V_GAP
-    };
-  }
-
-  // ── Draw edges first ───────────────────────────
-  function drawEdges(node, depth) {
-    if (!node) return;
-    if (node.left) {
-      const p = pos(node, depth);
-      const c = pos(node.left,  depth + 1);
-      const line = makeSVG('line', {
-        x1: p.x, y1: p.y, x2: c.x, y2: c.y,
-        stroke: '#bfdbfe', 'stroke-width': 2,
-        class: 'tree-edge-line'
-      });
-      svg.appendChild(line);
-
-      // Edge label "0"
-      const lx = (p.x + c.x) / 2 - 10;
-      const ly = (p.y + c.y) / 2;
-      svg.appendChild(edgeLabel('0', lx, ly, '#60a5fa'));
-
-      drawEdges(node.left,  depth + 1);
+  const edges = (n) => {
+    if (!n || n.isLeaf) return;
+    for (const [child, bit] of [[n.left, '0'], [n.right, '1']]) {
+      const a = xy(n), b = xy(child);
+      // a trace with one 45-degree bend, like a board layout
+      const midY = a.y + (b.y - a.y) * 0.45;
+      const dx = Math.sign(b.x - a.x) * Math.min(Math.abs(b.x - a.x), b.y - midY);
+      svg.appendChild(mk('path', { d: `M ${a.x} ${a.y} V ${midY} H ${b.x - dx} L ${b.x} ${b.y}`, fill: 'none', stroke: bit === '1' ? COL.one : COL.zero, 'stroke-width': 2, 'stroke-linejoin': 'round', opacity: bit === '1' ? .85 : .7 }));
+      svg.appendChild(mk('text', { x: (a.x + b.x) / 2 + (bit === '0' ? -8 : 8), y: midY - 5, 'text-anchor': 'middle', fill: bit === '1' ? COL.one : COL.zero, 'font-size': 11, 'font-family': 'JetBrains Mono, monospace' }, bit));
+      edges(child);
     }
-    if (node.right) {
-      const p = pos(node, depth);
-      const c = pos(node.right, depth + 1);
-      const line = makeSVG('line', {
-        x1: p.x, y1: p.y, x2: c.x, y2: c.y,
-        stroke: '#3b82f6', 'stroke-width': 2,
-        class: 'tree-edge-line'
-      });
-      svg.appendChild(line);
-
-      const lx = (p.x + c.x) / 2 + 4;
-      const ly = (p.y + c.y) / 2;
-      svg.appendChild(edgeLabel('1', lx, ly, '#1d4ed8'));
-
-      drawEdges(node.right, depth + 1);
-    }
-  }
-
-  // ── Draw nodes ─────────────────────────────────
-  function drawNodes(node, depth) {
-    if (!node) return;
-    const { x, y } = pos(node, depth);
-    const isLeaf    = node.isLeaf;
-
-    const g = makeSVG('g', { class: 'tree-node-g', 'data-char': node.char || '' });
-
-    // Circle
-    const circle = makeSVG('circle', {
-      cx: x, cy: y, r: NODE_R,
-      fill:   isLeaf ? '#3b82f6' : '#dbeafe',
-      stroke: isLeaf ? '#1d4ed8' : '#93c5fd',
-      'stroke-width': 2,
-      class: 'tree-node-circle'
-    });
-    g.appendChild(circle);
-
-    // Char label (leaf) or freq (internal)
-    const label = isLeaf
-      ? (node.char === ' ' ? 'SPC' : node.char === '\n' ? 'NL' : node.char)
-      : String(node.freq);
-
-    const text = makeSVG('text', {
-      x, y: y + 1,
-      'text-anchor': 'middle',
-      'dominant-baseline': 'middle',
-      fill: isLeaf ? 'white' : '#1d4ed8',
-      'font-size': isLeaf && label.length > 1 ? '9' : '11',
-      'font-weight': '700',
-      'font-family': 'JetBrains Mono, monospace',
-      'pointer-events': 'none'
-    });
-    text.textContent = label;
-    g.appendChild(text);
-
-    // Freq label below leaf
-    if (isLeaf) {
-      const freq = makeSVG('text', {
-        x, y: y + NODE_R + 12,
-        'text-anchor': 'middle',
-        fill: '#64748b',
-        'font-size': '9',
-        'font-family': 'JetBrains Mono, monospace',
-        'pointer-events': 'none'
-      });
-      freq.textContent = node.freq;
-      g.appendChild(freq);
-    }
-
-    // Hover highlight
-    if (isLeaf && node.char !== null) {
+  };
+  const nodes = (n) => {
+    if (!n) return;
+    const { x, y } = xy(n);
+    const g = mk('g', { 'data-char': n.char ?? '' });
+    const isHot = hot.has(n.id);
+    if (n.isLeaf) {
+      g.appendChild(mk('circle', { cx: x, cy: y, r: R, fill: COL.leaf, stroke: isHot ? COL.amber : COL.leafHi, 'stroke-width': isHot ? 3 : 2 }));
+      const lab = show(n.char);
+      g.appendChild(mk('text', { x, y: y + 1, 'text-anchor': 'middle', 'dominant-baseline': 'middle', fill: '#1E1306', 'font-size': lab.length > 1 ? 9 : 13, 'font-weight': 700, 'font-family': 'JetBrains Mono, monospace', 'pointer-events': 'none' }, lab));
+      g.appendChild(mk('text', { x, y: y + R + 13, 'text-anchor': 'middle', fill: COL.silk3, 'font-size': 10, 'font-family': 'JetBrains Mono, monospace', 'pointer-events': 'none' }, String(n.freq)));
       g.style.cursor = 'pointer';
-      g.addEventListener('mouseenter', () => highlightChar(node.char));
+      g.addEventListener('mouseenter', () => highlightChar(n.char));
       g.addEventListener('mouseleave', clearHighlight);
+    } else {
+      g.appendChild(mk('rect', { x: x - R, y: y - R + 3, width: R * 2, height: R * 2 - 6, rx: 3, fill: COL.chip, stroke: isHot ? COL.amber : COL.chipEdge, 'stroke-width': isHot ? 3 : 1.5 }));
+      g.appendChild(mk('text', { x, y: y + 1, 'text-anchor': 'middle', 'dominant-baseline': 'middle', fill: COL.silk, 'font-size': 11, 'font-weight': 600, 'font-family': 'JetBrains Mono, monospace', 'pointer-events': 'none' }, String(n.freq)));
     }
-
     svg.appendChild(g);
-    drawNodes(node.left,  depth + 1);
-    drawNodes(node.right, depth + 1);
-  }
-
-  drawEdges(root, 0);
-  drawNodes(root, 0);
+    nodes(n.left); nodes(n.right);
+  };
+  roots.forEach((r) => { edges(r); });
+  roots.forEach((r) => { nodes(r); });
 }
 
-function getDepth(node) {
-  if (!node) return 0;
-  return 1 + Math.max(getDepth(node.left), getDepth(node.right));
-}
-
-function edgeLabel(text, x, y, color) {
-  const t = makeSVG('text', {
-    x, y,
-    'text-anchor': 'middle',
-    'dominant-baseline': 'middle',
-    fill: color,
-    'font-size': '10',
-    'font-weight': '700',
-    'font-family': 'JetBrains Mono, monospace'
-  });
-  t.textContent = text;
-  return t;
-}
-
-function makeSVG(tag, attrs) {
+function mk(tag, attrs, text) {
   const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
   for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  if (text != null) el.textContent = text;
   return el;
+}
+
+// ── Step-by-step playback ──────────────────────
+const Build = { snaps: [], i: 0, timer: null };
+
+function showStep(i) {
+  const s = Build.snaps[i];
+  Build.i = i;
+  renderForest(s.roots, { hot: s.merged ? [s.merged.id] : [] });
+  const next = Build.snaps[i + 1];
+  const pq = document.getElementById('pq');
+  if (pq) pq.innerHTML = s.roots.map((n, k) => `<span class="${next && k < 2 ? 'take' : ''}">${n.isLeaf ? esc(show(n.char)) + ' ' : ''}${n.freq}</span>`).join('');
+  const txt = document.getElementById('stepText');
+  if (txt) {
+    if (i === 0) txt.innerHTML = `Start: one leaf per character, sorted by count. The two smallest (outlined) get merged first.`;
+    else if (!next) txt.innerHTML = `Done after <b>${i}</b> merges. Read a character's code by walking down from the top: left is 0, right is 1.`;
+    else txt.innerHTML = `Merge <b>${i}</b> of ${Build.snaps.length - 1}: ${label(s.left)} + ${label(s.right)} make a node of <b>${s.merged.freq}</b>.`;
+  }
+  const btn = document.getElementById('buildPlay');
+  if (btn && !next) { btn.textContent = 'Replay'; stopBuild(false); }
+}
+const label = (n) => (n.isLeaf ? `"${esc(show(n.char))}" (${n.freq})` : `a ${n.freq} node`);
+const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+function playBuild() {
+  const btn = document.getElementById('buildPlay');
+  if (Build.timer) { stopBuild(); return; }
+  if (Build.i >= Build.snaps.length - 1) showStep(0);
+  btn.textContent = 'Pause';
+  const per = Math.max(180, Math.min(900, 12000 / Build.snaps.length));
+  Build.timer = setInterval(() => showStep(Math.min(Build.i + 1, Build.snaps.length - 1)), per);
+}
+function stopBuild(resetLabel = true) {
+  clearInterval(Build.timer); Build.timer = null;
+  const btn = document.getElementById('buildPlay');
+  if (btn && resetLabel) btn.textContent = 'Play';
+}
+function stepBuild() { stopBuild(); showStep(Math.min(Build.i + 1, Build.snaps.length - 1)); }
+function finishBuild() { stopBuild(); showStep(Build.snaps.length - 1); }
+
+if (typeof INPUT_TEXT !== 'undefined' && INPUT_TEXT) {
+  Build.snaps = buildSnapshots(INPUT_TEXT);
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced || Build.snaps.length < 3) finishBuild();
+  else { showStep(0); setTimeout(playBuild, 500); }
 }
 
 // ── Highlight char in table on hover ──────────

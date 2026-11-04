@@ -4,28 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" href="/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%230E3A2B'/><rect x='8' y='8' width='16' height='16' rx='2' fill='%2315181A'/><g fill='%23B9B4A6'><rect x='10' y='4' width='3' height='4'/><rect x='15' y='4' width='3' height='4'/><rect x='20' y='4' width='3' height='4'/><rect x='10' y='24' width='3' height='4'/><rect x='15' y='24' width='3' height='4'/><rect x='20' y='24' width='3' height='4'/></g></svg>">
 </head>
 <body>
   <nav class="navbar">
-    <a href="/" class="nav-logo">
-      <div class="nav-logo-mark">SP</div>
-      <span>Systems<strong>Playground</strong></span>
+    <a href="/" class="nav-logo" aria-label="Systems Playground home">
+      <svg width="30" height="26" viewBox="0 0 30 26" aria-hidden="true">
+        <g fill="#B9B4A6"><rect x="6" y="0" width="3" height="5"/><rect x="13.5" y="0" width="3" height="5"/><rect x="21" y="0" width="3" height="5"/><rect x="6" y="21" width="3" height="5"/><rect x="13.5" y="21" width="3" height="5"/><rect x="21" y="21" width="3" height="5"/></g>
+        <rect x="2" y="4" width="26" height="18" rx="2" fill="#15181A" stroke="#2B3033"/>
+        <circle cx="6.5" cy="8.5" r="1.6" fill="#2B3033"/>
+        <circle cx="22" cy="13" r="2.2" fill="#74FF9A"/>
+      </svg>
+      <span>Systems Playground</span>
     </a>
     <div class="nav-links">
-      <a href="/compression" class="nav-link <%= typeof title !== 'undefined' && title.includes('Huffman') ? 'active' : '' %>">
-        <span class="nav-link-dot compression-dot"></span>Compression
-      </a>
-      <a href="/database" class="nav-link <%= typeof title !== 'undefined' && title.includes('Key-Value') ? 'active' : '' %>">
-        <span class="nav-link-dot database-dot"></span>Database
-      </a>
-      <a href="/network" class="nav-link <%= typeof title !== 'undefined' && title.includes('Network') ? 'active' : '' %>">
-        <span class="nav-link-dot network-dot"></span>Networking
-      </a>
+      <a href="/compression" class="nav-link <%= title.includes('Huffman') ? 'active' : '' %>"><span class="nav-link-dot"></span>Compression</a>
+      <a href="/database" class="nav-link <%= title.includes('Key-Value') ? 'active' : '' %>"><span class="nav-link-dot"></span>Database</a>
+      <a href="/network" class="nav-link <%= title.includes('Network') ? 'active' : '' %>"><span class="nav-link-dot"></span>Network</a>
     </div>
-    <div class="nav-badge">CS Internals</div>
   </nav>
 
   <main><%- body %></main>
@@ -33,10 +31,7 @@
   <footer class="footer">
     <div class="footer-inner">
       <span>Systems Playground</span>
-      <span class="footer-sep">·</span>
-      <span>Huffman Coding · Key-Value Store · Network Simulation</span>
-      <span class="footer-sep">·</span>
-      <span>Built with Node.js + Express</span>
+      <span>Real implementations, not canned animations. Node.js and Express.</span>
     </div>
   </footer>
 
