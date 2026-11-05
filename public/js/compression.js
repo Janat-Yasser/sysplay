@@ -52,7 +52,7 @@ function buildSnapshots(text) {
 const show = (c) => (c === ' ' ? 'SPC' : c === '\n' ? 'NL' : c === '\t' ? 'TAB' : c);
 
 // ── Tree renderer: draws a forest (one tree per item still in the queue) ──
-const COL = { zero: '#2E8A4E', one: '#8DFFA8', leaf: '#0B2414', leafHi: '#66FF8C', chip: '#020703', chipEdge: '#2E8A4E', silk: '#8DFFA8', silk3: '#2E8A4E', amber: '#FFB000' };
+const COL = { zero: '#94A3B8', one: '#2563EB', leaf: '#2563EB', leafHi: '#2563EB', chip: '#FFFFFF', chipEdge: '#94A3B8', silk: '#0F172A', silk3: '#64748B', amber: '#D97706' };
 
 function renderForest(roots, opts = {}) {
   const svg = document.getElementById('huffmanTree');
@@ -91,7 +91,7 @@ function renderForest(roots, opts = {}) {
     if (n.isLeaf) {
       g.appendChild(mk('circle', { cx: x, cy: y, r: R, fill: COL.leaf, stroke: isHot ? COL.amber : COL.leafHi, 'stroke-width': isHot ? 3 : 2 }));
       const lab = show(n.char);
-      g.appendChild(mk('text', { x, y: y + 1, 'text-anchor': 'middle', 'dominant-baseline': 'middle', fill: '#B8FFC9', 'font-size': lab.length > 1 ? 9 : 13, 'font-weight': 700, 'font-family': 'JetBrains Mono, monospace', 'pointer-events': 'none' }, lab));
+      g.appendChild(mk('text', { x, y: y + 1, 'text-anchor': 'middle', 'dominant-baseline': 'middle', fill: '#FFFFFF', 'font-size': lab.length > 1 ? 9 : 13, 'font-weight': 700, 'font-family': 'JetBrains Mono, monospace', 'pointer-events': 'none' }, lab));
       g.appendChild(mk('text', { x, y: y + R + 13, 'text-anchor': 'middle', fill: COL.silk3, 'font-size': 10, 'font-family': 'JetBrains Mono, monospace', 'pointer-events': 'none' }, String(n.freq)));
       g.style.cursor = 'pointer';
       g.addEventListener('mouseenter', () => highlightChar(n.char));

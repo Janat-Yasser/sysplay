@@ -34,9 +34,9 @@ window.addEventListener('resize', resizeCanvas);
 // ── Look: a circuit board ──────────────────────
 // hosts are round copper pads, routers and servers are chips, cables are traces
 const C = {
-  board: '#020703', trace: '#1F6B3A', traceHi: '#8DFFA8', cut: '#FF5555',
-  copper: '#020703', copperHi: '#66FF8C', chip: '#020703', chipEdge: '#55D67F',
-  silk: '#8DFFA8', silk2: '#55D67F', silk3: '#2E8A4E', blue: '#5CE1E6'
+  board: '#FFFFFF', trace: '#CBD5E1', traceHi: '#2563EB', cut: '#DC2626',
+  copper: '#2563EB', copperHi: '#2563EB', chip: '#0F172A', chipEdge: '#0F172A',
+  silk: '#0F172A', silk2: '#475569', silk3: '#94A3B8', blue: '#16A34A'
 };
 const NODE_STYLES = {
   host:     { shape: 'pad',  r: 17 },
@@ -72,7 +72,7 @@ function drawNetwork() {
     const active = highlightedEdges.has(`${edge.from}-${edge.to}`) || highlightedEdges.has(`${edge.to}-${edge.from}`);
     ctx.setLineDash(cut ? [10, 9] : []);
     ctx.strokeStyle = cut ? C.cut : C.trace;
-    ctx.lineWidth = cut ? 2 : 2;
+    ctx.lineWidth = cut ? 2 : 2.5;
     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
     ctx.setLineDash([]);
     if (active && !cut) {
@@ -115,28 +115,24 @@ function drawNetwork() {
     let bottom;
     if (st.shape === 'pad') {
       ctx.beginPath(); ctx.arc(x, y, st.r, 0, Math.PI * 2);
-      ctx.fillStyle = C.copper; ctx.fill();
-      ctx.lineWidth = 2; ctx.strokeStyle = onPath ? C.traceHi : C.copperHi; ctx.stroke();
-      ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fillStyle = C.board; ctx.fill();
+      ctx.fillStyle = onPath ? '#DBEAFE' : '#FFFFFF'; ctx.fill();
+      ctx.lineWidth = 2.5; ctx.strokeStyle = C.copper; ctx.stroke();
+      ctx.fillStyle = C.copper; ctx.font = '600 11px "Inter", sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(node.id, x, y + 1);
       bottom = y + st.r;
     } else {
       const w = st.w, h = st.h;
-      ctx.fillStyle = C.silk3;
-      for (let k = 0; k < 4; k++) {
-        const px = x - w / 2 + 7 + k * ((w - 14) / 3);
-        ctx.fillRect(px - 2, y - h / 2 - 5, 4, 5); ctx.fillRect(px - 2, y + h / 2, 4, 5);
-      }
-      ctx.fillStyle = C.chip; ctx.strokeStyle = onPath ? C.traceHi : C.chipEdge; ctx.lineWidth = onPath ? 2.5 : 1.5;
-      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x - w / 2, y - h / 2, w, h, 3) : ctx.rect(x - w / 2, y - h / 2, w, h); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = C.silk;
-      ctx.font = '500 11px "JetBrains Mono", monospace';
+      ctx.fillStyle = node.type === 'server' ? '#16A34A' : C.chip;
+      ctx.strokeStyle = onPath ? C.traceHi : 'transparent'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x - w / 2, y - h / 2, w, h, 7) : ctx.rect(x - w / 2, y - h / 2, w, h); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '600 12px "Inter", sans-serif';
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(node.id, x, y + 1);
-      if (st.led) { ctx.beginPath(); ctx.arc(x + w / 2 - 6, y - h / 2 + 6, 2.5, 0, Math.PI * 2); ctx.fillStyle = st.led; ctx.fill(); }
       bottom = y + h / 2 + 5;
     }
     ctx.fillStyle = onPath ? C.silk : C.silk2;
-    ctx.font = '500 13px "JetBrains Mono", monospace';
+    ctx.font = '500 12px "Inter", sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'top';
     ctx.fillText(node.label, x, bottom + 5);
   });
@@ -158,7 +154,7 @@ function drawPacket(p, nx, ny) {
   ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 22, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI * 2);
   ctx.fillStyle = p.color; ctx.fill();
-  ctx.fillStyle = '#020703';
+  ctx.fillStyle = '#FFFFFF';
   ctx.font = '700 10px "JetBrains Mono", monospace';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText(p.ttl, x, y + .5);

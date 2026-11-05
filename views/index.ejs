@@ -1,53 +1,34 @@
 <section class="home-top">
-  <h1 class="home-title">Open the box<span class="cursor" aria-hidden="true"></span></h1>
-  <p class="home-sub">Three real systems running where you can poke them: a Huffman compressor, a key-value store that writes to disk, and a packet network that routes with Dijkstra. Change the input and watch them work.</p>
+  <h1 class="home-title">See how computers actually work.</h1>
+  <p class="home-sub">Three real systems you can poke at: a Huffman compressor that builds its tree in front of you, a key-value store that writes to disk, and a packet network where you can cut a cable and watch the routes heal.</p>
 </section>
 
-<section class="boot" aria-label="Modules">
-  <div class="boot-screen" id="boot">
-    <div class="boot-line dim">sysplay bios v2.0, (c) 2026 Janat Yasser</div>
-    <div class="boot-line dim">memory check .......................... 640K ok</div>
-    <div class="boot-line">probing modules</div>
-    <div class="boot-line">  [ <span class="ok">ok</span> ] <span class="amber">U1</span>  huffman encoder ........... <a href="/compression">./compression</a></div>
-    <div class="boot-line">  [ <span class="ok">ok</span> ] <span class="amber">U2</span>  key-value store ........... <a href="/database">./database</a></div>
-    <div class="boot-line">  [ <span class="ok">ok</span> ] <span class="amber">U3</span>  packet router ............. <a href="/network">./network</a></div>
-    <div class="boot-line">3 modules ready. pick one.</div>
-    <div class="boot-line boot-prompt">$</div>
-  </div>
-</section>
-<script>
-  // type the boot log out line by line (shown all at once with reduced motion)
-  (function () {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const lines = [...document.querySelectorAll('#boot .boot-line')];
-    lines.forEach((l) => (l.style.visibility = 'hidden'));
-    lines.forEach((l, i) => setTimeout(() => (l.style.visibility = 'visible'), 180 + i * (i < 3 ? 260 : 340)));
-  })();
-</script>
-
-<section class="bom">
-  <h2>man sysplay</h2>
-  <table class="bom-table">
-    <thead><tr><th>Ref</th><th>Part</th><th>What you can do with it</th><th>What it teaches</th></tr></thead>
-    <tbody>
-      <tr>
-        <td class="ref">U1</td>
-        <td><a href="/compression">Huffman compression</a></td>
-        <td>Type any text and watch the tree get built merge by merge, then see every character's new code and how many bits you saved.</td>
-        <td>Greedy algorithms, priority queues, variable-length codes</td>
-      </tr>
-      <tr>
-        <td class="ref">U2</td>
-        <td><a href="/database">Key-value store</a></td>
-        <td>Drive a real store from a terminal with PUT, GET, DELETE and SCAN. Every write lands in a JSON file on disk.</td>
-        <td>Hash indexes, persistence, why range scans need sorted storage</td>
-      </tr>
-      <tr>
-        <td class="ref">U3</td>
-        <td><a href="/network">Packet network</a></td>
-        <td>Send packets across three topologies, cut a cable mid-run and watch the routes heal, turn up packet loss and count what gets through.</td>
-        <td>Shortest-path routing, TTL, packet loss, redundancy</td>
-      </tr>
-    </tbody>
-  </table>
+<section class="modules" aria-label="Modules">
+  <a class="module" href="/compression">
+    <img src="/img/compression.png" alt="The Huffman tree being built merge by merge" loading="lazy">
+    <div class="module-body">
+      <span class="module-kicker">Compression</span>
+      <h2>Huffman coding</h2>
+      <p>Type any text and watch the tree get built one merge at a time, then see every character's code and how many bits you saved.</p>
+      <ul><li>Greedy algorithms</li><li>Priority queues</li><li>Prefix codes</li></ul>
+    </div>
+  </a>
+  <a class="module" href="/database">
+    <img src="/img/database.png" alt="The key-value store terminal and stored records" loading="lazy">
+    <div class="module-body">
+      <span class="module-kicker">Storage</span>
+      <h2>Key-value store</h2>
+      <p>Drive a real store from a terminal with PUT, GET, DELETE and SCAN. Every write lands in a JSON file on disk.</p>
+      <ul><li>Hash indexes</li><li>Persistence</li><li>Range scans</li></ul>
+    </div>
+  </a>
+  <a class="module" href="/network">
+    <img src="/img/network.png" alt="A mesh network with a packet in flight" loading="lazy">
+    <div class="module-body">
+      <span class="module-kicker">Networking</span>
+      <h2>Packet network</h2>
+      <p>Route packets with Dijkstra, cut a cable mid-run and watch them re-route, turn up packet loss and count what gets through.</p>
+      <ul><li>Shortest paths</li><li>TTL</li><li>Packet loss</li></ul>
+    </div>
+  </a>
 </section>

@@ -17,7 +17,7 @@
 
 | Home | Huffman, merge by merge | Key-value store |
 |---|---|---|
-| ![Home page: a green-phosphor boot log listing the three modules](docs/home.png) | ![The Huffman forest after 9 merges, with the priority queue above it](docs/compression.png) | ![The terminal after PUT, GET and SCAN, with stored records and the operation log](docs/database.png) |
+| ![Home page: the three modules with previews](docs/home.png) | ![The Huffman forest after 9 merges, with the priority queue above it](docs/compression.png) | ![The terminal after PUT, GET and SCAN, with stored records and the operation log](docs/database.png) |
 
 ## How it fits together
 
@@ -57,7 +57,7 @@ Open http://localhost:3000. The store file `data/kvstore.json` is created on fir
 <details>
 <summary>Design</summary>
 
-The site is an old CRT terminal: black glass, green phosphor text with a soft glow, scanlines, and a boot log on the home page that links to each module. Green means delivered or OK, amber means waiting or TTL, red means dropped or cut. Type is VT323 for headings and JetBrains Mono for everything else, self-hosted in `public/fonts` (SIL Open Font License).
+Clean and neutral: white pages, slate text, one blue accent, and green/amber/red only where they mean delivered, waiting or dropped. The database module keeps a dark terminal because it is one. Type is Inter, with JetBrains Mono for code, self-hosted in `public/fonts` (SIL Open Font License).
 
 </details>
 
