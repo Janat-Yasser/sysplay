@@ -6,7 +6,7 @@
 
 ![Node](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js&logoColor=white)
 ![Tests](https://img.shields.io/badge/tests-5%20passing-brightgreen)
-![License](https://img.shields.io/badge/license-MIT-blue)
+![License](https://img.shields.io/badge/license-all%20rights%20reserved-lightgrey)
 
 ## Why it's interesting
 
@@ -84,4 +84,4 @@ test/huffman.test.js    round-trip and prefix-free tests
 - A B-tree index for the key-value store, so SCAN stops being O(n)
 - TCP: the three-way handshake and a congestion window
 
-MIT licensed.
+© 2026 Janat Yasser. All rights reserved. See [LICENSE](LICENSE).
