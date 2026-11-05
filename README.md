@@ -15,9 +15,9 @@
 - **A database you can see on disk.** PUT, GET, DELETE, SCAN and STATS from a terminal, with an operation log next to it. Every write lands in `data/kvstore.json`.
 - **Real implementations, not canned animations.** What you see is the actual algorithm running on your input.
 
-| The board | Huffman, merge by merge | Key-value store |
+| Home | Huffman, merge by merge | Key-value store |
 |---|---|---|
-| ![Home page: three chips on a circuit board, one per module](docs/home.png) | ![The Huffman forest after 9 merges, with the priority queue above it](docs/compression.png) | ![The terminal after PUT, GET and SCAN, with stored records and the operation log](docs/database.png) |
+| ![Home page: a green-phosphor boot log listing the three modules](docs/home.png) | ![The Huffman forest after 9 merges, with the priority queue above it](docs/compression.png) | ![The terminal after PUT, GET and SCAN, with stored records and the operation log](docs/database.png) |
 
 ## How it fits together
 
@@ -57,7 +57,7 @@ Open http://localhost:3000. The store file `data/kvstore.json` is created on fir
 <details>
 <summary>Design</summary>
 
-The site is a circuit board: green solder mask, off-white silkscreen labels, copper traces and status LEDs. Green means delivered or OK, amber means waiting or TTL, red means dropped or cut. Each module is a chip with a reference designator (U1, U2, U3), and the home page has a parts list. Type is Barlow Semi Condensed and JetBrains Mono, self-hosted in `public/fonts` (SIL Open Font License).
+The site is an old CRT terminal: black glass, green phosphor text with a soft glow, scanlines, and a boot log on the home page that links to each module. Green means delivered or OK, amber means waiting or TTL, red means dropped or cut. Type is VT323 for headings and JetBrains Mono for everything else, self-hosted in `public/fonts` (SIL Open Font License).
 
 </details>
 
@@ -71,7 +71,7 @@ models/kvstore.js       file-backed key-value store with an operation log
 models/network.js       topologies and packet types
 models/controllers.js
 routes/                 /compression, /database, /network
-views/                  EJS pages; partials/board.ejs is the home-page board
+views/                  EJS pages
 public/js/              compression.js (tree playback), database.js (terminal), network.js (canvas)
 test/huffman.test.js    round-trip and prefix-free tests
 ```

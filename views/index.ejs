@@ -1,14 +1,32 @@
 <section class="home-top">
-  <h1 class="home-title">Open the box.</h1>
+  <h1 class="home-title">Open the box<span class="cursor" aria-hidden="true"></span></h1>
   <p class="home-sub">Three real systems running where you can poke them: a Huffman compressor, a key-value store that writes to disk, and a packet network that routes with Dijkstra. Change the input and watch them work.</p>
 </section>
 
-<section class="board-wrap" aria-label="Modules">
-  <%- include('partials/board') %>
+<section class="boot" aria-label="Modules">
+  <div class="boot-screen" id="boot">
+    <div class="boot-line dim">sysplay bios v2.0, (c) 2026 Janat Yasser</div>
+    <div class="boot-line dim">memory check .......................... 640K ok</div>
+    <div class="boot-line">probing modules</div>
+    <div class="boot-line">  [ <span class="ok">ok</span> ] <span class="amber">U1</span>  huffman encoder ........... <a href="/compression">./compression</a></div>
+    <div class="boot-line">  [ <span class="ok">ok</span> ] <span class="amber">U2</span>  key-value store ........... <a href="/database">./database</a></div>
+    <div class="boot-line">  [ <span class="ok">ok</span> ] <span class="amber">U3</span>  packet router ............. <a href="/network">./network</a></div>
+    <div class="boot-line">3 modules ready. pick one.</div>
+    <div class="boot-line boot-prompt">$</div>
+  </div>
 </section>
+<script>
+  // type the boot log out line by line (shown all at once with reduced motion)
+  (function () {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const lines = [...document.querySelectorAll('#boot .boot-line')];
+    lines.forEach((l) => (l.style.visibility = 'hidden'));
+    lines.forEach((l, i) => setTimeout(() => (l.style.visibility = 'visible'), 180 + i * (i < 3 ? 260 : 340)));
+  })();
+</script>
 
 <section class="bom">
-  <h2>Parts list</h2>
+  <h2>man sysplay</h2>
   <table class="bom-table">
     <thead><tr><th>Ref</th><th>Part</th><th>What you can do with it</th><th>What it teaches</th></tr></thead>
     <tbody>
