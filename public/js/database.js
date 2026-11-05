@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Janat Yasser. All rights reserved.
 /* =============================================
    DATABASE — Client JS
    Terminal interface for the KV store

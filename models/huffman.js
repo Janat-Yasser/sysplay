@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Janat Yasser. All rights reserved.
 // Huffman Coding — pure logic, no dependencies
 
 class HuffmanNode {

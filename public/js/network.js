@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Janat Yasser. All rights reserved.
 /* =============================================
    NETWORK VISUALIZER — Client JS
    Canvas-based with Dijkstra routing,

@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Janat Yasser. All rights reserved.
 /* =============================================
    COMPRESSION — Client JS
    Renders the Huffman tree as SVG and handles

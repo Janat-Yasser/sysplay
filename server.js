@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Janat Yasser. All rights reserved.
 require('dotenv').config();
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');

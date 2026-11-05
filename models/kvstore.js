@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Janat Yasser. All rights reserved.
 // Mini Key-Value Store
 // Persists to a JSON file — real I/O, real database concepts
 

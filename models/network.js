@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Janat Yasser. All rights reserved.
 // Network Simulation Model
 // Defines the topology and routing logic used by the frontend visualizer
 

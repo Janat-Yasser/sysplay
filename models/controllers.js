@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Janat Yasser. All rights reserved.
 // Index controller
 const { compress } = require('./huffman');
 const kv = require('./kvstore');
