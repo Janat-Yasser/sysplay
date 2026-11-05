@@ -76,10 +76,10 @@ const TOPOLOGIES = {
 };
 
 const PACKET_TYPES = [
-  { id: 'http',  label: 'HTTP Request',  color: '#2563EB', ttl: 64,  size: '1.2 KB' },
+  { id: 'http',  label: 'HTTP Request',  color: '#D97706', ttl: 64,  size: '1.2 KB' },
   { id: 'dns',   label: 'DNS Query',     color: '#7C3AED', ttl: 32,  size: '64 B'   },
   { id: 'ping',  label: 'ICMP Ping',     color: '#16A34A', ttl: 128, size: '32 B'   },
-  { id: 'tcp',   label: 'TCP Segment',   color: '#D97706', ttl: 64,  size: '512 B'  },
+  { id: 'tcp',   label: 'TCP Segment',   color: '#2563EB', ttl: 64,  size: '512 B'  },
   { id: 'data',  label: 'Data Payload',  color: '#DB2777', ttl: 64,  size: '8 KB'   },
   // traceroute-style probe: runs out of hops on longer routes, so you can watch TTL expire
   { id: 'probe', label: 'TTL 2 probe',   color: '#0891B2', ttl: 2,   size: '32 B'   }

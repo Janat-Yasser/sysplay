@@ -57,7 +57,7 @@ Open http://localhost:3000. The store file `data/kvstore.json` is created on fir
 <details>
 <summary>Design</summary>
 
-Clean and neutral: white pages, slate text, one blue accent, and green/amber/red only where they mean delivered, waiting or dropped. The database module keeps a dark terminal because it is one. Type is Inter, with JetBrains Mono for code, self-hosted in `public/fonts` (SIL Open Font License).
+Warm and calm: stone-grey pages, near-black text, one amber accent (buttons, the Huffman tree's 1-branches, a packet's route), and green/yellow/red only where they mean delivered, waiting or dropped. The database module keeps a dark terminal because it is one. Type is IBM Plex Sans, with IBM Plex Mono for code, self-hosted in `public/fonts` (SIL Open Font License).
 
 </details>
 

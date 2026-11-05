@@ -34,9 +34,9 @@ window.addEventListener('resize', resizeCanvas);
 // ── Look: a circuit board ──────────────────────
 // hosts are round copper pads, routers and servers are chips, cables are traces
 const C = {
-  board: '#FFFFFF', trace: '#CBD5E1', traceHi: '#2563EB', cut: '#DC2626',
-  copper: '#2563EB', copperHi: '#2563EB', chip: '#0F172A', chipEdge: '#0F172A',
-  silk: '#0F172A', silk2: '#475569', silk3: '#94A3B8', blue: '#16A34A'
+  board: '#FFFFFF', trace: '#D6D3D1', traceHi: '#F59E0B', cut: '#DC2626',
+  copper: '#B45309', copperHi: '#B45309', chip: '#1C1917', chipEdge: '#1C1917',
+  silk: '#1C1917', silk2: '#57534E', silk3: '#A8A29E', blue: '#16A34A'
 };
 const NODE_STYLES = {
   host:     { shape: 'pad',  r: 17 },
@@ -88,7 +88,7 @@ function drawNetwork() {
       ctx.beginPath(); ctx.moveTo(mx - 7, my - 7); ctx.lineTo(mx + 7, my + 7); ctx.moveTo(mx + 7, my - 7); ctx.lineTo(mx - 7, my + 7); ctx.stroke();
     } else {
       ctx.fillStyle = C.silk3;
-      ctx.font = '500 12px "JetBrains Mono", monospace';
+      ctx.font = '500 12px "IBM Plex Mono", monospace';
       ctx.textAlign = 'center';
       ctx.fillText(edge.weight, mx, my - 9);
     }
@@ -115,9 +115,9 @@ function drawNetwork() {
     let bottom;
     if (st.shape === 'pad') {
       ctx.beginPath(); ctx.arc(x, y, st.r, 0, Math.PI * 2);
-      ctx.fillStyle = onPath ? '#DBEAFE' : '#FFFFFF'; ctx.fill();
+      ctx.fillStyle = onPath ? '#FEF3C7' : '#FFFFFF'; ctx.fill();
       ctx.lineWidth = 2.5; ctx.strokeStyle = C.copper; ctx.stroke();
-      ctx.fillStyle = C.copper; ctx.font = '600 11px "Inter", sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = C.copper; ctx.font = '600 11px "IBM Plex Sans", sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(node.id, x, y + 1);
       bottom = y + st.r;
     } else {
@@ -126,13 +126,13 @@ function drawNetwork() {
       ctx.strokeStyle = onPath ? C.traceHi : 'transparent'; ctx.lineWidth = 3;
       ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x - w / 2, y - h / 2, w, h, 7) : ctx.rect(x - w / 2, y - h / 2, w, h); ctx.fill(); ctx.stroke();
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '600 12px "Inter", sans-serif';
+      ctx.font = '600 12px "IBM Plex Sans", sans-serif';
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(node.id, x, y + 1);
       bottom = y + h / 2 + 5;
     }
     ctx.fillStyle = onPath ? C.silk : C.silk2;
-    ctx.font = '500 12px "Inter", sans-serif';
+    ctx.font = '500 12px "IBM Plex Sans", sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'top';
     ctx.fillText(node.label, x, bottom + 5);
   });
@@ -155,7 +155,7 @@ function drawPacket(p, nx, ny) {
   ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI * 2);
   ctx.fillStyle = p.color; ctx.fill();
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = '700 10px "JetBrains Mono", monospace';
+  ctx.font = '700 10px "IBM Plex Mono", monospace';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText(p.ttl, x, y + .5);
   ctx.textBaseline = 'alphabetic';

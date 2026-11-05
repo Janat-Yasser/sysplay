@@ -52,7 +52,7 @@ function buildSnapshots(text) {
 const show = (c) => (c === ' ' ? 'SPC' : c === '\n' ? 'NL' : c === '\t' ? 'TAB' : c);
 
 // ── Tree renderer: draws a forest (one tree per item still in the queue) ──
-const COL = { zero: '#94A3B8', one: '#2563EB', leaf: '#2563EB', leafHi: '#2563EB', chip: '#FFFFFF', chipEdge: '#94A3B8', silk: '#0F172A', silk3: '#64748B', amber: '#D97706' };
+const COL = { zero: '#A8A29E', one: '#B45309', leaf: '#B45309', leafHi: '#B45309', chip: '#FFFFFF', chipEdge: '#A8A29E', silk: '#1C1917', silk3: '#78716C', amber: '#1C1917' };
 
 function renderForest(roots, opts = {}) {
   const svg = document.getElementById('huffmanTree');
@@ -79,7 +79,7 @@ function renderForest(roots, opts = {}) {
       const midY = a.y + (b.y - a.y) * 0.45;
       const dx = Math.sign(b.x - a.x) * Math.min(Math.abs(b.x - a.x), b.y - midY);
       svg.appendChild(mk('path', { d: `M ${a.x} ${a.y} V ${midY} H ${b.x - dx} L ${b.x} ${b.y}`, fill: 'none', stroke: bit === '1' ? COL.one : COL.zero, 'stroke-width': 2, 'stroke-linejoin': 'round', opacity: bit === '1' ? .85 : .7 }));
-      svg.appendChild(mk('text', { x: (a.x + b.x) / 2 + (bit === '0' ? -8 : 8), y: midY - 5, 'text-anchor': 'middle', fill: bit === '1' ? COL.one : COL.zero, 'font-size': 11, 'font-family': 'JetBrains Mono, monospace' }, bit));
+      svg.appendChild(mk('text', { x: (a.x + b.x) / 2 + (bit === '0' ? -8 : 8), y: midY - 5, 'text-anchor': 'middle', fill: bit === '1' ? COL.one : COL.zero, 'font-size': 11, 'font-family': 'IBM Plex Mono, monospace' }, bit));
       edges(child);
     }
   };
@@ -91,14 +91,14 @@ function renderForest(roots, opts = {}) {
     if (n.isLeaf) {
       g.appendChild(mk('circle', { cx: x, cy: y, r: R, fill: COL.leaf, stroke: isHot ? COL.amber : COL.leafHi, 'stroke-width': isHot ? 3 : 2 }));
       const lab = show(n.char);
-      g.appendChild(mk('text', { x, y: y + 1, 'text-anchor': 'middle', 'dominant-baseline': 'middle', fill: '#FFFFFF', 'font-size': lab.length > 1 ? 9 : 13, 'font-weight': 700, 'font-family': 'JetBrains Mono, monospace', 'pointer-events': 'none' }, lab));
-      g.appendChild(mk('text', { x, y: y + R + 13, 'text-anchor': 'middle', fill: COL.silk3, 'font-size': 10, 'font-family': 'JetBrains Mono, monospace', 'pointer-events': 'none' }, String(n.freq)));
+      g.appendChild(mk('text', { x, y: y + 1, 'text-anchor': 'middle', 'dominant-baseline': 'middle', fill: '#FFFFFF', 'font-size': lab.length > 1 ? 9 : 13, 'font-weight': 700, 'font-family': 'IBM Plex Mono, monospace', 'pointer-events': 'none' }, lab));
+      g.appendChild(mk('text', { x, y: y + R + 13, 'text-anchor': 'middle', fill: COL.silk3, 'font-size': 10, 'font-family': 'IBM Plex Mono, monospace', 'pointer-events': 'none' }, String(n.freq)));
       g.style.cursor = 'pointer';
       g.addEventListener('mouseenter', () => highlightChar(n.char));
       g.addEventListener('mouseleave', clearHighlight);
     } else {
       g.appendChild(mk('rect', { x: x - R, y: y - R + 3, width: R * 2, height: R * 2 - 6, rx: 3, fill: COL.chip, stroke: isHot ? COL.amber : COL.chipEdge, 'stroke-width': isHot ? 3 : 1.5 }));
-      g.appendChild(mk('text', { x, y: y + 1, 'text-anchor': 'middle', 'dominant-baseline': 'middle', fill: COL.silk, 'font-size': 11, 'font-weight': 600, 'font-family': 'JetBrains Mono, monospace', 'pointer-events': 'none' }, String(n.freq)));
+      g.appendChild(mk('text', { x, y: y + 1, 'text-anchor': 'middle', 'dominant-baseline': 'middle', fill: COL.silk, 'font-size': 11, 'font-weight': 600, 'font-family': 'IBM Plex Mono, monospace', 'pointer-events': 'none' }, String(n.freq)));
     }
     svg.appendChild(g);
     nodes(n.left); nodes(n.right);
