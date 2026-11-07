@@ -3,9 +3,10 @@
 
 // Highlight active nav link
 (function () {
-  const path = window.location.pathname;
+  // Compare resolved paths so this works at / and under a sub-path (the static demo)
+  const path = window.location.pathname.replace(/\/$/, '');
   document.querySelectorAll('.nav-link').forEach(link => {
-    const href = link.getAttribute('href');
-    if (href && path.startsWith(href)) link.classList.add('active');
+    const target = new URL(link.href).pathname.replace(/\/(index\.html)?$/, '');
+    if (target && path.startsWith(target)) link.classList.add('active');
   });
 })();
